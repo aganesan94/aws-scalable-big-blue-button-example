@@ -6,7 +6,9 @@
 | applicationimageamiid | SSM Parameter for the variable part of the Application Server Ubuntu AMI  | ami-0e472ba40eb589f49 |
 | Lambda function | get the latest AMI ID  | Refer lambda below |
 | Lambda Role | Required to describe ec2 images and get AMI  | Refer lambda role below |
-
+| A log group | ??  | ?? |
+| Turn AMI Image ID | ??  | ?? |
+| TURN AMI Parameter ID | SSM Parameter for the variable part of the Turn Ubuntu AMI  | ami-04505e74c0741db8d |
 
 
 #### Lambda function to fetch the latest AMI-ID
