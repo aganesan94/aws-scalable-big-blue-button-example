@@ -1,6 +1,5 @@
 # AMI Finder Stack
 
-
 | Resource | Usage | Values
 | ------------- | ------------- | ------------- |
 | applicationimageamiid | SSM Parameter for the variable part of the Application Server Ubuntu AMI  | ami-0e472ba40eb589f49 |
