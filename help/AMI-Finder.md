@@ -2,7 +2,7 @@
 
 ## References
 
-* [Template](templates/bbb-on-aws-amifinder.template.yaml)
+* [Template](./../templates/bbb-on-aws-amifinder.template.yaml)
 
 
 ## Summary
