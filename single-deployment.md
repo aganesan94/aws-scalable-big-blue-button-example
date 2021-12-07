@@ -14,3 +14,4 @@ During a Single Deployment the following resources are created
 
 
 * [AMI Finder](help/AMI-Finder.md)
+* [SES Provider](help/AMI-Finder.md)

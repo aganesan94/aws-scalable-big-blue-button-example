@@ -1,5 +1,12 @@
 # AMI Finder Stack
 
+## References
+
+* [Template](templates/bbb-on-aws-amifinder.template.yaml)
+
+
+## Summary
+
 | Resource | Usage | Values
 | ------------- | ------------- | ------------- |
 | applicationimageamiid | SSM Parameter for the variable part of the Application Server Ubuntu AMI  | ami-0e472ba40eb589f49 |
