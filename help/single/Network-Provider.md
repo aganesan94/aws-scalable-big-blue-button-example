@@ -1,5 +1,9 @@
 # Network Provider
 
+## References
+
+* [Template](./../templates/bbb-on-aws-network.template.yaml)
+
 ## Summary
 
 | Resource | Usage | Values

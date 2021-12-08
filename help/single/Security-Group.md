@@ -1,6 +1,8 @@
 # Security Group
 
+## References
 
+* [Template](./../templates/bbb-on-aws-securitygroups.template.yaml)
 
 | Resource | Usage | Values
 | ------------- | ------------- | ------------- |
