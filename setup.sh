@@ -104,6 +104,7 @@ echo "##################################################"
 echo "File Copy finished"
 
 ENVIRONMENTTYPE=$(jq -r ".Parameters.BBBEnvironmentType" bbb-on-aws-param.json)
+# ENVIRONMENTTYPE=$(jq -r ".Parameters.BBBEnvironmentType" bbb-on-aws-single.json)
 
 if [ "$ENVIRONMENTTYPE" == 'scalable' ]
 then 
