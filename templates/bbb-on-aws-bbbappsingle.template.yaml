@@ -152,6 +152,14 @@ Parameters:
     Description: AMI id that should be used for the appserver instaces
     Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
     Default: 'bbbapplicationimageid'
+  BBBInstanceKey:
+    Type: AWS::EC2::KeyPair::KeyName
+    ConstraintDescription : "must be the name of an existing EC2 KeyPair."    
+  DataDogMonitorFlag:  
+    Description: Datadog monitoring flag, if turned to false is not monitored. 
+    Type: String
+    Default: false
+    AllowedValues: [ true, false ]
 
 Resources:
   BBBApplicationAutoScaling:

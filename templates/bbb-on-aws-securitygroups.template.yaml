@@ -167,6 +167,15 @@ Resources:
       ToPort: 80
       GroupId: !Ref BBBApplicationSecurityGroup
 
+  BBBApplicationSSHKey:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      CidrIp: 0.0.0.0/0
+      IpProtocol: tcp
+      FromPort: 22
+      ToPort: 22
+      GroupId: !Ref BBBApplicationSecurityGroup      
+
   BBBApplicationSecurityGroupVCPorts:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
@@ -235,6 +244,15 @@ Resources:
       IpProtocol: tcp
       FromPort: 3478
       ToPort: 3478
+      GroupId: !Ref BBBTurnSecurityGroup
+
+  BBBTurnSecurityGroupSSHPort:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      CidrIp: 0.0.0.0/0
+      IpProtocol: tcp
+      FromPort: 22
+      ToPort: 22
       GroupId: !Ref BBBTurnSecurityGroup
 
   BBBSharedStorageSecurityGroup:
