@@ -1065,90 +1065,92 @@ Resources:
         - Key: Datadog_Monitor
           Value: !Ref DataDogMonitorFlag
 
-  # BBBAppStackSingle:
-  #   Type: AWS::CloudFormation::Stack
-  #   Condition: BBBSingleEnvironment
-  #   Properties:
-  #     TemplateURL:
-  #       Fn::Join:
-  #         - ""
-  #         - - "https://s3.amazonaws.com/"
-  #           - Fn::ImportValue: !Sub "${BBBStackBucketStack}-BBBStackBucket"
-  #           - "/bbb-on-aws-bbbappsingle.template.yaml"
-  #     Parameters:
-  #       BBBApplicationVersion:
-  #         Ref: BBBApplicationVersion
-  #       BBBStackBucketStack:
-  #         Fn::ImportValue: !Sub "${BBBStackBucketStack}-BBBStackBucket"
-  #       BBBOperatorEMail:
-  #         Ref: BBBOperatorEMail
-  #       BBBTurnSecret:
-  #         Fn::GetAtt:
-  #           - BBBTurnStack
-  #           - Outputs.BBBTurnSecret
-  #       BBBTurnHostnameParameter:
-  #         Fn::GetAtt:
-  #           - BBBTurnStack
-  #           - Outputs.BBBTurnHostnameParameter
-  #       BBBNotificationTopic:
-  #         Ref: BBBNotificationTopic
-  #       BBBSystemLogsGroupArn:
-  #         Fn::GetAtt:
-  #           - BBBSystemLogsGroup
-  #           - Arn 
-  #       BBBSystemLogsGroup:
-  #         Ref: BBBSystemLogsGroup
-  #       BBBApplicationLogsGroupArn:
-  #         Fn::GetAtt:
-  #           - BBBApplicationLogsGroup
-  #           - Arn 
-  #       BBBApplicationLogsGroup:
-  #         Ref: BBBApplicationLogsGroup
-  #       BBBApplicationSecurityGroup:
-  #         Fn::GetAtt:
-  #           - BBBSecurityGroupStack
-  #           - Outputs.BBBApplicationSecurityGroup
-  #       BBBPublicApplicationSubnets:
-  #         Fn::If:
-  #           - BBBNewVPC 
-  #           - Fn::GetAtt:
-  #             - BBBNetworkStack
-  #             - Outputs.BBBPublicApplicationSubnets
-  #           - Fn::Join:
-  #             - ","
-  #             - Ref: BBBPublicApplicationSubnets
-  #       BBBLatestApplicationAmiId:
-  #         Fn::GetAtt:
-  #           - "BBBAMIFinderStack"
-  #           - Outputs.BBBApplicationAMIParameter
-  #       BBBEnvironmentStage:
-  #         Ref: BBBEnvironmentStage
-  #       BBBApplicationInstanceType:
-  #         Ref: BBBApplicationInstanceType
-  #       BBBApplicationDataVolumeSize:
-  #         Ref: BBBApplicationDataVolumeSize
-  #       BBBApplicationRootVolumeSize:
-  #         Ref: BBBApplicationRootVolumeSize
-  #       BBBApplicationMaxInstances:
-  #         Ref: BBBApplicationMaxInstances
-  #       BBBApplicationMinInstances:
-  #         Ref: BBBApplicationMinInstances
-  #       BBBApplicationDesiredInstances:
-  #         Ref: BBBApplicationDesiredInstances
-  #       BBBHostedZone: 
-  #         Ref: BBBHostedZone
-  #       BBBDomainName:
-  #         Ref: BBBDomainName
-  #     Tags:
-  #       - Key: Name
-  #         Value:
-  #           Fn::Sub: BBBApplicationStackSingle-${BBBEnvironmentName}
-  #       - Key: Environment
-  #         Value: !Ref BBBEnvironmentName
-  #       - Key: Stage
-  #         Value: !Ref BBBEnvironmentStage
-  #       - Key: Datadog_Monitor
-  #         Value: !Ref DataDogMonitorFlag
+  BBBAppStackSingle:
+    Type: AWS::CloudFormation::Stack
+    Condition: BBBSingleEnvironment
+    Properties:
+      TemplateURL:
+        Fn::Join:
+          - ""
+          - - "https://s3.amazonaws.com/"
+            - Fn::ImportValue: !Sub "${BBBStackBucketStack}-BBBStackBucket"
+            - "/bbb-on-aws-bbbappsingle.template.yaml"
+      Parameters:
+        BBBApplicationVersion:
+          Ref: BBBApplicationVersion
+        BBBStackBucketStack:
+          Fn::ImportValue: !Sub "${BBBStackBucketStack}-BBBStackBucket"
+        BBBOperatorEMail:
+          Ref: BBBOperatorEMail
+        BBBTurnSecret:
+          Fn::GetAtt:
+            - BBBTurnStack
+            - Outputs.BBBTurnSecret
+        BBBTurnHostnameParameter:
+          Fn::GetAtt:
+            - BBBTurnStack
+            - Outputs.BBBTurnHostnameParameter
+        BBBNotificationTopic:
+          Ref: BBBNotificationTopic
+        BBBSystemLogsGroupArn:
+          Fn::GetAtt:
+            - BBBSystemLogsGroup
+            - Arn 
+        BBBSystemLogsGroup:
+          Ref: BBBSystemLogsGroup
+        BBBApplicationLogsGroupArn:
+          Fn::GetAtt:
+            - BBBApplicationLogsGroup
+            - Arn 
+        BBBApplicationLogsGroup:
+          Ref: BBBApplicationLogsGroup
+        BBBApplicationSecurityGroup:
+          Fn::GetAtt:
+            - BBBSecurityGroupStack
+            - Outputs.BBBApplicationSecurityGroup
+        BBBPublicApplicationSubnets:
+          Fn::If:
+            - BBBNewVPC 
+            - Fn::GetAtt:
+              - BBBNetworkStack
+              - Outputs.BBBPublicApplicationSubnets
+            - Fn::Join:
+              - ","
+              - Ref: BBBPublicApplicationSubnets
+        BBBLatestApplicationAmiId:
+          Fn::GetAtt:
+            - "BBBAMIFinderStack"
+            - Outputs.BBBApplicationAMIParameter
+        BBBEnvironmentStage:
+          Ref: BBBEnvironmentStage
+        BBBApplicationInstanceType:
+          Ref: BBBApplicationInstanceType
+        BBBApplicationDataVolumeSize:
+          Ref: BBBApplicationDataVolumeSize
+        BBBApplicationRootVolumeSize:
+          Ref: BBBApplicationRootVolumeSize
+        BBBApplicationMaxInstances:
+          Ref: BBBApplicationMaxInstances
+        BBBApplicationMinInstances:
+          Ref: BBBApplicationMinInstances
+        BBBApplicationDesiredInstances:
+          Ref: BBBApplicationDesiredInstances
+        BBBHostedZone: 
+          Ref: BBBHostedZone
+        BBBDomainName:
+          Ref: BBBDomainName
+        BBBInstanceKey:
+          Ref: BBBInstanceKey          
+      Tags:
+        - Key: Name
+          Value:
+            Fn::Sub: BBBApplicationStackSingle-${BBBEnvironmentName}
+        - Key: Environment
+          Value: !Ref BBBEnvironmentName
+        - Key: Stage
+          Value: !Ref BBBEnvironmentStage
+        - Key: Datadog_Monitor
+          Value: !Ref DataDogMonitorFlag
 
   BBBFontendAppsStack:
     Type: AWS::CloudFormation::Stack
@@ -1205,8 +1207,6 @@ Resources:
             - Outputs.BBBScaleliteELBSecurityGroup
         BBBACMCertArn:
           Ref: BBBACMCertArn
-        BBBInstanceKey:
-          Ref: BBBInstanceKey
         BBBSESProviderArn: 
           Fn::GetAtt:
             - BBBSESProviderStack

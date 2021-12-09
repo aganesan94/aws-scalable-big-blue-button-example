@@ -250,6 +250,7 @@ Resources:
       AssociatePublicIpAddress: true
       IamInstanceProfile: !Ref BBBApplicationEC2InstanceProfile
       ImageId: !Ref BBBLatestApplicationAmiId
+      KeyName: !Ref BBBInstanceKey
       EbsOptimized: true
       InstanceMonitoring: true
       InstanceType: !Ref BBBApplicationInstanceType
@@ -270,21 +271,37 @@ Resources:
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash -xe
+
+          AWS_BBB_LOGS_DIR=/opt/bbb/logs
+          mkdir -p $AWS_BBB_LOGS_DIR
+          AWS_BBB_LOGS=$AWS_BBB_LOGS_DIR/bbb-install.logs
+          
+          echo "Attempting to update " >> $AWS_BBB_LOGS 
           apt update -y 
           
           while fuser /var/{lib/{dpkg,apt/lists},cache/apt/archives}/lock >/dev/null 2>&1; do sleep 1; done
 
+          echo "DEBIAN_FRONTEND='noninteractive' apt -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' full-upgrade" >> $AWS_BBB_LOGS 
           DEBIAN_FRONTEND='noninteractive' apt -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' full-upgrade
 
+          echo "apt autoremove -y" >> $AWS_BBB_LOGS 
           apt autoremove -y
+
+          echo "apt autoclean" >> $AWS_BBB_LOGS 
           apt autoclean
            
           while fuser /var/{lib/{dpkg,apt/lists},cache/apt/archives}/lock >/dev/null 2>&1; do sleep 1; done
           
+          echo "apt install -y git binutils python3-pip python-pip build-essential python-dev python-setuptools jq" >> $AWS_BBB_LOGS 
           apt install -y git binutils python3-pip python-pip build-essential python-dev python-setuptools jq
 
-          pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
-          pip install -U awscli
+          ln -s /root/aws-cfn-bootstrap-latest/init/ubuntu/cfn-hup /etc/init.d/cfn-hup
+                            
+          echo "pip3 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz" >> $AWS_BBB_LOGS 
+          pip3 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz
+
+          echo "pip3 install -U awscli" >> $AWS_BBB_LOGS 
+          pip3 install -U awscli
 
           # Set instance Hostname
           instance_ipv4=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
@@ -293,12 +310,21 @@ Resources:
           instance_fqdn=$instance_publichostname.${BBBDomainName}
 
           # register in route53
+          echo "wget --tries=10 https://github.com/barnybug/cli53/releases/download/0.8.18/cli53-linux-amd64 -O /usr/local/bin/cli53" >> $AWS_BBB_LOGS 
           wget --tries=10 https://github.com/barnybug/cli53/releases/download/0.8.18/cli53-linux-amd64 -O /usr/local/bin/cli53
+          
+          echo "sudo chmod +x /usr/local/bin/cli53" >> $AWS_BBB_LOGS 
           sudo chmod +x /usr/local/bin/cli53
 
           # create script for route53-handler
+
+          echo "aws s3 cp s3://${BBBStackBucketStack}/route53-handler.service /etc/systemd/system/route53-handler.service" >> $AWS_BBB_LOGS 
           aws s3 cp s3://${BBBStackBucketStack}/route53-handler.service /etc/systemd/system/route53-handler.service
+          
+          echo "aws s3 cp s3://${BBBStackBucketStack}/route53-handler.sh /usr/local/bin/route53-handler.sh" >> $AWS_BBB_LOGS 
           aws s3 cp s3://${BBBStackBucketStack}/route53-handler.sh /usr/local/bin/route53-handler.sh
+          
+          echo "chmod +x /usr/local/bin/route53-handler.sh" >> $AWS_BBB_LOGS 
           chmod +x /usr/local/bin/route53-handler.sh
 
           sed -i "s/INSTANCE_PLACEHOLDER/$instance_publichostname/g" /etc/systemd/system/route53-handler.service
@@ -308,6 +334,7 @@ Resources:
           systemctl enable route53-handler
           systemctl start route53-handler
 
+          echo "Reloading route53 handler" >> $AWS_BBB_LOGS 
           mkdir -p /var/bigbluebutton
 
           if test -e "/dev/nvme1n1"; then
@@ -333,13 +360,16 @@ Resources:
 
           sleep 1m
 
+          echo "Resolving FQDN" >> $AWS_BBB_LOGS 
           x=1
           while [ $x -le 5 ]
           do
             until host $instance_fqdn  | grep -m 1 "has address $instance_ipv4"; do sleep 5 ; done
             x=$(( $x + 1 ))
           done
+          echo "Completed Resolving FQDN" >> $AWS_BBB_LOGS 
 
+          echo "wget -qO- https://ubuntu.bigbluebutton.org/bbb-install.sh | bash -s -- -v ${BBBApplicationVersion} -s $instance_fqdn -e ${BBBOperatorEMail} -c $turn_fqdn:$turnsecret -g" >> $AWS_BBB_LOGS 
           wget -qO- https://ubuntu.bigbluebutton.org/bbb-install.sh | bash -s -- -v ${BBBApplicationVersion} -s $instance_fqdn -e ${BBBOperatorEMail} -c $turn_fqdn:$turnsecret -g
 
           # create script for turn-handler
@@ -354,6 +384,7 @@ Resources:
           systemctl daemon-reload
           systemctl enable turn-handler.timer
           systemctl start turn-handler.timer
+          echo "Completed restarting turn handler" >> $AWS_BBB_LOGS 
           
           curl https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py -O
           chmod +x ./awslogs-agent-setup.py
@@ -362,7 +393,8 @@ Resources:
           sed -i "s|APPLICATIONLOGS_PLACEHOLDER|${BBBSystemLogsGroup}|g" /tmp/bbb-cwagent.config
           ./awslogs-agent-setup.py -n -r ${AWS::Region} -c /tmp/bbb-cwagent.config
           systemctl enable awslogs
-
+          echo "Completed enabling aws logs" >> $AWS_BBB_LOGS
+  
           /usr/local/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource BBBApplicationAutoScaling --region ${AWS::Region} || true
 
 Outputs:

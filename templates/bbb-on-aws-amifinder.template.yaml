@@ -30,6 +30,11 @@ Parameters:
       - stage
       - prod
       - dev
+  AMIInstanceType:
+    Description: Instance type to launch BBB EC2 instances.
+    Type: String
+    Default: t3a.medium
+    AllowedValues: [ t3a.medium ]
 
 Resources:
   BBBGetLatestAMILambdaRole:
@@ -58,6 +63,7 @@ Resources:
     Properties:
       RetentionInDays: 7
       LogGroupName: !Join ["", ["/", !Ref "AWS::StackName", "/", !Ref BBBGetLatestAMI]]
+
 
   BBBGetLatestAMI:
     Type: AWS::Lambda::Function
